@@ -10,7 +10,10 @@ class Config:
     FROM_MAIL = os.getenv('FROM_MAIL')
     DEBUG = False
     # Path for images folder
+    # TODO: Remove this when integrating DO Spaces API
     IMGDIR = os.path.join(os.path.expanduser("~"), "ambit-images")
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI')
+    SUPERUSER_NAME = os.getenv('SUPERUSER_NAME', "admin")
 
 
 class DevelopmentConfig(Config):
@@ -18,7 +21,6 @@ class DevelopmentConfig(Config):
     HOST = '0.0.0.0'
     PORT = 3000
     # database URI goes here
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -37,6 +39,8 @@ class ProductionConfig(Config):
     DEBUG = False
     HOST = '0.0.0.0'
     PORT = '443'
+    PRESERVE_CONTEXT_ON_EXCEPTION = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 config_by_name = dict(

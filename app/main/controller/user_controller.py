@@ -1,6 +1,6 @@
 # endpoint for user operations
 from flask import request
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
 from flask_restplus import Resource
 
 from app.main.service.user_service import UserService
@@ -19,7 +19,7 @@ class GetUserDetails(Resource):
     """ Fetch details of user by id """
     @api.doc('Endpoint to fetch details of a user by id')
     @api.marshal_with(userInfo, envelope='resource')
-    @api.expect(UserDto.userReq)
+    @api.doc(params={'id': 'Id of the requested user'})
     def get(self):
         # Fetching the user id
         return UserService.get_by_id(id=request.args.get('id'))
@@ -30,7 +30,7 @@ class GetUserFeed(Resource):
     """ Get the user's feed based on priority of tags """
     @login_required
     @api.doc('Endpoint to get the user\'s feed based on tag priority')
-    @api.marshal_with(post, envelope='resource')
+    @api.marshal_list_with(post, envelope='resource')
     def get(self):
         return UserService.get_user_feed()
 
@@ -59,7 +59,7 @@ class GetPayment(Resource):
     """ Getting the payments of user """
     @login_required
     @api.doc('Endpoint to get the payments done by a user.')
-    @api.marshal_with(payment, envelope='resource')
+    @api.marshal_list_with(payment, envelope='resource')
     def get(self):
         return UserService.get_user_payment()
 

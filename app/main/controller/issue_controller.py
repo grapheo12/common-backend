@@ -7,12 +7,14 @@ adding new issues.
 from flask import request
 from flask_restplus import Resource
 
+from app.main.models.imgLinks import ImgLink
+from app.main.service.auth_service import Authentication
 from app.main.service.issue_service import IssueService
 from app.main.util.dto import IssueDto
-from app.main.models.imgLinks import ImgLink
 
 api = IssueDto.api
 issue = IssueDto.issue
+issue_new = IssueDto.issue_new
 
 
 @api.route('/getAll')
@@ -21,13 +23,11 @@ class getAllIssues(Resource):
     @api.doc("Getting all issues")
     @api.marshal_list_with(issue, envelope='resource')
     def get(self):
-        all_issues = IssueService.getAll()
-
-        i = 0
-        while i < len(all_issues):
-            all_issues[i].cover = ImgLink.query.filter_by(
-                id=all_issues[i].cover).first().link
-            i += 1
+        all_issues = IssueService.getAll()[0]
+       
+        for ind in range(len(all_issues)):
+            all_issues[ind].cover_link = ImgLink.query.filter_by(
+                id=all_issues[ind].cover).first().link
 
         return all_issues
 
@@ -36,7 +36,8 @@ class getAllIssues(Resource):
 class addIssue(Resource):
     """ Endpoint to add an issue """
     @api.doc("Adding a new issue")
-    @api.expect(issue, validate=True)
+    @api.expect(issue_new, validate=True)
+    @Authentication.isSuperUser
     def post(self):
         post_data = request.json
         return IssueService.addIssue(data=post_data)

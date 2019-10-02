@@ -22,10 +22,10 @@ from app.main.models import users
 setup_logger()
 LOG = getLogger(__name__)
 
-app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
-app.register_blueprint(blueprint)
+app = create_app(os.getenv('FLASK_ENV') or 'dev')
 
-app.app_context().push()
+app.register_blueprint(blueprint)
+LOG.info('blueprints registered')
 
 manager = Manager(app)
 
@@ -52,6 +52,12 @@ def test():
         return 0
     return 1
 
+
+@manager.command
+def rollback():
+    """Roll back database to a previous state in case of exception."""
+    db.session.rollback()
+    LOG.warning('Last session rolled back!')
 
 if __name__ == '__main__':
     manager.run()

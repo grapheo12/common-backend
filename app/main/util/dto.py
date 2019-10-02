@@ -1,7 +1,7 @@
 # Data Transfer Object- Responsible for carrying data between processes
+from flask import current_app
 from flask_restplus import Namespace, fields, reqparse
 from werkzeug.datastructures import FileStorage
-from flask import current_app
 
 
 class AuthDto:
@@ -21,6 +21,11 @@ class AuthDto:
         'email': fields.String(required=True, description='Login Email')
     })
 
+    change_password = api.model('change_password', {
+        'oldPassword' : fields.String(required=True, format='password'),
+        'newPassword' : fields.String(required=True, format='password')
+    })
+
 
 class UserDto:
     api = Namespace('user', description='user related operations')
@@ -28,10 +33,6 @@ class UserDto:
         'username': fields.String(required=True, description='user username'),
         'password': fields.String(required=True, description='user password'),
         'email': fields.String(required=True, description='user email address'),
-    })
-
-    userReq = api.model('userReq', {
-        'id': fields.Integer(required=True, description="Id of the user")
     })
 
     userInfo = api.model('userInfo', {
@@ -70,21 +71,21 @@ class PostDto:
     article = api.model('article', {
         'post_id': fields.Integer(required=False,
                                   description="Id of the post"),
-        'author': fields.String(required=True,
+        'author_name': fields.String(required=True,
                                 description="Author of the post"),
-        'author_id': fields.Integer(required=False),
+        # 'author_id': fields.Integer(required=False),
         'title': fields.String(required=True, description="Title of the post"),
         'body': fields.String(required=True, description="Body of the post"),
         'post_time': fields.DateTime(description="Time Created"),
         'imgLinks': fields.List(fields.String, description="ImgLinks"),
         'tags': fields.List(fields.String, description="ImgLinks"),
         'isSaved': fields.Boolean(default=False,
-            description="Checks if the article is saved by the current user.")
+                                  description="Checks if the article is saved by the current user.")
     })
 
     articleGen = api.model('articleGen', {
         'author': fields.String(required=True,
-                                description="Username author of the post"),
+                                description="Name author of the post"),
         'title': fields.String(required=True, description="Title of the post"),
         'body': fields.String(required=True, description="Body of the post"),
         'post_time': fields.DateTime(description="Time Created"),
@@ -134,15 +135,24 @@ class TagDto:
 
 class IssueDto:
     api = Namespace('issue', description="for issue related operations")
-    issue = api.model('tag', {
+    issue = api.model('issue', {
         'id': fields.Integer(required=False, description="ID of the concerned issue"),
-        'cover': fields.String(required=True, description="Cover image of the concerned issue"),
+        'cover_link': fields.String(required=True, description="Cover image of the concerned issue"),
         'month': fields.String(required=True, description="Month of the concerned issue"),
         'year': fields.String(required=True, description="Year of the concerned issue"),
         'issue_tag': fields.String(required=True, description="Issue tag of the concerned issue"),
         'link': fields.String(required=True, description="Link of the concerned issue"),
         'description': fields.String(required=False, description="Description of the issue")
     })
+    
+    issue_new = api.model('issue_new', {
+        'coverId': fields.Integer(required=True, description="ID of the cover image"),
+        'month': fields.String(required=True, description="First three letters of the month in lowercase"),
+        'year': fields.String(required=True, description="Year of the issue in string"),
+        'link': fields.String(required=True, description="Link of the concerned issue"),
+        'description': fields.String(required=False, description="Description of the issue")
+    })
+
 
 class ImageDto:
     api = Namespace('image', description="For image related operations")

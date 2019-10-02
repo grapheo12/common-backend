@@ -8,7 +8,7 @@ from app.main.models.tags import Tag
 LOG = getLogger(__name__)
 
 
-class Issue:
+class Issue(db.Model):
     """
     Description of Issue Model
     Rows
@@ -43,11 +43,12 @@ class Issue:
             self.cover = coverId
 
             self.setIssueTag(tagName)
+            db.session.add(self)
             db.session.commit()
 
             LOG.info("New Issue Created")
-        except:
-            LOG.error("Cannot create Issue")
+        except BaseException:
+            LOG.error("Cannot create Issue", exc_info=True)
 
     def setIssueTag(self, tagName):
         existing_tags = Tag.query.filter_by(name=tagName).all()
